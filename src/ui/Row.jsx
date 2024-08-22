@@ -13,8 +13,6 @@ const Row = styled.div`
           flex-direction: column;
           justify-content: center;
         `}
-  
-  padding: 2rem 4rem 1rem;
 `;
 
 export default Row;
