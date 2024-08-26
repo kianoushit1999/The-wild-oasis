@@ -1,5 +1,4 @@
 import styled from "styled-components";
-
 import Input from "../../ui/Input";
 import Form from "../../ui/Form";
 import Button from "../../ui/Button";
@@ -37,10 +36,10 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
-const Error = styled.span`
-  font-size: 1.4rem;
-  color: var(--color-red-700);
-`;
+// const Error = styled.span`
+//   font-size: 1.4rem;
+//   color: var(--color-red-700);
+// `;
 
 function CreateCabinForm() {
   return (
@@ -80,7 +79,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset">
           Cancel
         </Button>
-        <Button>Edit cabin</Button>
+        <Button>Add cabin</Button>
       </FormRow>
     </Form>
   );

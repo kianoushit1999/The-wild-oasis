@@ -15,9 +15,14 @@ const FileInput = styled.input`
     background-color: var(--color-brand-600);
     cursor: pointer;
     transition: color 0.2s, background-color 0.2s;
+    border: 0.1rem solid var(--color-grey-300);
 
     &:hover {
       background-color: var(--color-brand-700);
+    }
+
+    &:focus {
+      outline: none;
     }
   }
 `;

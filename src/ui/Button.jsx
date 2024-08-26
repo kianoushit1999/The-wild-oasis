@@ -47,3 +47,10 @@ const variations = {
     }
   `,
 };
+
+const Button = styled.button`
+  ${(props) => variations[props.variation]}
+  ${(props) => sizes[props.size]}
+`
+
+export default Button
