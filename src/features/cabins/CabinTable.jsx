@@ -36,14 +36,12 @@ const Discount = styled.div`
 function CabinTable() {
   const {
     data: cabins,
-    isLoading,
-    error,
+    isLoading
   } = useQuery({
     queryKey: ["cabin"],
-    queryFn: getCabins,
+    queryFn: getCabins
   });
 
-  console.log(cabins, error);
 
   if (isLoading) return <Spinner />;
 

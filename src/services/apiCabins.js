@@ -7,9 +7,19 @@ export async function getCabins() {
 }
 
 export async function addCabin(newCabin) {
+  newCabin = {
+    name: newCabin.name,
+    discount: newCabin.discount,
+    max_capacity: newCabin.maxCapacity,
+    regular_price: newCabin.regularPrice,
+    image: newCabin.image
+  }
+
+  console.log(newCabin)
+
   const { data, error } = await supabase
     .from("cabins")
-    .insert(newCabin)
+    .insert([newCabin])
     .select();
 
   if (error) throw new Error("Cabins couldn't be loaded.");

@@ -63,7 +63,7 @@ function CabinRow({ cabin }) {
       queryClient.invalidateQueries({
         queryKey: ["cabin"],
       });
-    },
+    }
   });
 
   return (
