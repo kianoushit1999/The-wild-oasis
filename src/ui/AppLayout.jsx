@@ -14,6 +14,7 @@ const Main = styled.main`
   background-color: #eee;
   height: 100%;
   width: 100%;
+  overflow: scroll;
 `;
 
 function AppLayout() {

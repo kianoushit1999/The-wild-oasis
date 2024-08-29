@@ -40,15 +40,21 @@ const Label = styled.label`
   font-weight: 500;
 `;
 
-// const Error = styled.span`
-//   font-size: 1.4rem;
-//   color: var(--color-red-700);
-// `;
+const Error = styled.span`
+  font-size: 1.4rem;
+  color: var(--color-red-700);
+`;
 
 function CreateCabinForm() {
   const queryClient = useQueryClient();
-  const { register, handleSubmit } = useForm();
-  const {isLoading, mutate} = useMutation({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState:{errors},
+    getValues,
+  } = useForm();
+  const { isLoading, mutate } = useMutation({
     mutationFn: (data) => addCabin(data),
     onSuccess: () => {
       toast.success("This Cabin added successfully.");
@@ -62,21 +68,52 @@ function CreateCabinForm() {
     mutate(data);
   };
 
+  const ErrorHandler = (err) => {
+    console.log(err);
+  };
+
   return (
-    <Form onSubmit={handleSubmit(submitHandler)}>
+    <Form onSubmit={handleSubmit(submitHandler, ErrorHandler)}>
       <FormRow>
         <Label htmlFor="name">Cabin name</Label>
-        <Input type="text" id="name" {...register("name")} />
+        <Input
+          type="text"
+          id="name"
+          {...register("name", {
+            required: "This field is required",
+          })}
+        />
+        {errors?.name?.message && <Error>{errors.name.message}</Error>}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="maxCapacity">Maximum capacity</Label>
-        <Input type="number" id="maxCapacity" {...register("maxCapacity")} />
+        <Input
+          type="number"
+          id="maxCapacity"
+          {...register("maxCapacity", {
+            required: "This field is required",
+            min: {
+              value: 1,
+              message: "Capacity should be atlease 1",
+            },
+          })}
+        />
+        {errors?.maxCapacity?.message && <Error>{errors.maxCapacity.message}</Error>}
       </FormRow>
 
       <FormRow>
         <Label htmlFor="regularPrice">Regular price</Label>
-        <Input type="number" id="regularPrice" {...register("regularPrice")} />
+        <Input
+          type="number"
+          id="regularPrice"
+          {...register("regularPrice", {
+            required: "This field is required",
+          })}
+        />
+        {errors?.regularPrice?.message && (
+          <Error>{errors.regularPrice.message}</Error>
+        )}
       </FormRow>
 
       <FormRow>
@@ -85,8 +122,14 @@ function CreateCabinForm() {
           type="number"
           id="discount"
           defaultValue={0}
-          {...register("discount")}
+          {...register("discount", {
+            required: "This field is required",
+            validate: (value) =>
+              getValues().regularPrice >= value ||
+              "Discount shouldn't be less than 100",
+          })}
         />
+        {errors?.number?.message && <Error>{errors.number.message}</Error>}
       </FormRow>
 
       <FormRow>
@@ -101,11 +144,18 @@ function CreateCabinForm() {
 
       <FormRow>
         <Label htmlFor="image">Cabin photo</Label>
-        <FileInput id="image" accept="image/*" {...register("image")} />
+        <FileInput
+          id="image"
+          accept="image/*"
+          {...register("image", {
+            required: "This field is required",
+          })}
+        />
+        {errors?.image?.message && <Error>{errors.image.message}</Error>}
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset">
+        <Button variation="secondary" type="reset" onClick={() => reset()}>
           Cancel
         </Button>
         <Button disabled={isLoading}>Add cabin</Button>
