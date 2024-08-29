@@ -6,23 +6,36 @@ export async function getCabins() {
   return cabins;
 }
 
-export async function addCabin(newCabin) {
-  newCabin = {
-    name: newCabin.name,
-    discount: newCabin.discount,
-    max_capacity: newCabin.maxCapacity,
-    regular_price: newCabin.regularPrice,
-    image: newCabin.image
+export async function addCabin(cabin) {
+  const imageName = `${Math.random()}-${cabin.image.name}`
+  const baseUrl = `https://vdoyhrhjeiyrolqzdipc.supabase.co/storage/v1/object/public/cabin_images/${imageName}`
+  const newCabin = {
+    name: cabin.name,
+    discount: cabin.discount,
+    max_capacity: cabin.maxCapacity,
+    regular_price: cabin.regularPrice,
+    image: baseUrl
   }
-
-  console.log(newCabin)
 
   const { data, error } = await supabase
     .from("cabins")
     .insert([newCabin])
     .select();
 
-  if (error) throw new Error("Cabins couldn't be loaded.");
+  if (error) throw new Error("This cabin couldn't be loaded.");
+
+  const { error:storageErr } = await supabase
+  .storage
+  .from('cabin_images')
+  .upload(`${imageName}`, cabin.image)
+
+  console.log(storageErr)
+
+  if (storageErr) {
+    await supabase.from("cabins").delete().eq("id", data.id);
+
+    throw new Error("This cabin image couldn't be loaded.");
+  }
 
   return data;
 }

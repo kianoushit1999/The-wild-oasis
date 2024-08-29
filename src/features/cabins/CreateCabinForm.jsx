@@ -65,7 +65,7 @@ function CreateCabinForm() {
   });
 
   const submitHandler = (data) => {
-    mutate(data);
+    mutate({...data, image:data.image[0]});
   };
 
   const ErrorHandler = (err) => {
@@ -129,7 +129,7 @@ function CreateCabinForm() {
               "Discount shouldn't be less than 100",
           })}
         />
-        {errors?.number?.message && <Error>{errors.number.message}</Error>}
+        {errors?.discount?.message && <Error>{errors.discount.message}</Error>}
       </FormRow>
 
       <FormRow>
