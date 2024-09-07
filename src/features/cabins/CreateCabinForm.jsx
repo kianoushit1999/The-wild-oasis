@@ -180,7 +180,7 @@ function CreateCabinForm({ cabin }) {
 
       <FormRow>
         <Button variation="secondary" type="reset" onClick={() => reset()}>
-          Cancel
+          reset
         </Button>
         <Button disabled={isLoading}>{cabin ? "Edit Cabin": "Add new cabin"}</Button>
       </FormRow>

@@ -17,8 +17,6 @@ export async function addOrEditCabin(cabin) {
     baseUrl += imageName;
   }
 
-  console.log(cabinId);
-  console.log(baseUrl);
   const newCabin = {
     name: cabin.name,
     discount: cabin.discount,
