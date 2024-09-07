@@ -6,33 +6,47 @@ export async function getCabins() {
   return cabins;
 }
 
-export async function addCabin(cabin) {
-  const imageName = `${Math.random()}-${cabin.image.name}`
-  const baseUrl = `https://vdoyhrhjeiyrolqzdipc.supabase.co/storage/v1/object/public/cabin_images/${imageName}`
+export async function addOrEditCabin(cabin) {
+  let baseUrl = `https://vdoyhrhjeiyrolqzdipc.supabase.co/storage/v1/object/public/cabin_images/`;
+  let imageName = "";
+  const cabinId = cabin?.id;
+  if (cabinId && cabin?.image?.startsWith(baseUrl)) {
+    baseUrl = cabin.image;
+  } else {
+    imageName = `${Math.random()}-${cabin.image[0].name}`;
+    baseUrl += imageName;
+  }
+
+  console.log(cabinId);
+  console.log(baseUrl);
   const newCabin = {
     name: cabin.name,
     discount: cabin.discount,
     max_capacity: cabin.maxCapacity,
     regular_price: cabin.regularPrice,
-    image: baseUrl
-  }
+    image: baseUrl,
+  };
+  let query = supabase.from("cabins");
 
-  const { data, error } = await supabase
-    .from("cabins")
-    .insert([newCabin])
-    .select();
+  if (cabinId) {
+    query = query.update(newCabin).eq("id", cabinId);
+  } else {
+    query = query.insert([newCabin]);
+  }
+  const { data, error } = await query.select();
 
   if (error) throw new Error("This cabin couldn't be loaded.");
 
-  const { error:storageErr } = await supabase
-  .storage
-  .from('cabin_images')
-  .upload(`${imageName}`, cabin.image)
+  if (imageName) {
+    const { error: storageErr } = await supabase.storage
+      .from("cabin_images")
+      .upload(`${imageName}`, cabin.image[0]);
 
-  if (storageErr) {
-    await supabase.from("cabins").delete().eq("id", data.id);
+    if (storageErr) {
+      await supabase.from("cabins").delete().eq("id", data.id);
 
-    throw new Error("This cabin image couldn't be loaded.");
+      throw new Error("This cabin image couldn't be loaded.");
+    }
   }
 
   return data;

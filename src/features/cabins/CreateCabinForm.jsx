@@ -6,7 +6,7 @@ import FileInput from "../../ui/FileInput";
 import Textarea from "../../ui/Textarea";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { addCabin } from "../../services/apiCabins";
+import { addOrEditCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 
 const FormRow = styled.div`
@@ -45,19 +45,40 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm() {
+function CreateCabinForm({ cabin }) {
   const queryClient = useQueryClient();
+  let enableEditting = false;
+
+  if(cabin){
+    enableEditting = true;
+  }
+
   const {
     register,
     handleSubmit,
     reset,
-    formState:{errors},
+    formState: { errors },
     getValues,
-  } = useForm();
-  const { isLoading, mutate } = useMutation({
-    mutationFn: (data) => addCabin(data),
+  } = useForm({
+    defaultValues: enableEditting
+      ? {
+          id: cabin.id,
+          name: cabin.name,
+          regularPrice: cabin.regular_price,
+          maxCapacity: cabin.max_capacity,
+          image: cabin.image,
+          discount: cabin.discount,
+          description: cabin.description
+        }
+      : {},
+  });
+
+  // , mutate: createCabin
+
+  const { isLoading, mutate: addOrEdit } = useMutation({
+    mutationFn: (cabin) => addOrEditCabin(cabin),
     onSuccess: () => {
-      toast.success("This Cabin added successfully.");
+      toast.success("Your request submitted successfully.");
       queryClient.invalidateQueries({
         queryKey: ["cabin"],
       });
@@ -65,7 +86,8 @@ function CreateCabinForm() {
   });
 
   const submitHandler = (data) => {
-    mutate({...data, image:data.image[0]});
+    console.log(data)
+    addOrEdit(data)
   };
 
   const ErrorHandler = (err) => {
@@ -99,7 +121,9 @@ function CreateCabinForm() {
             },
           })}
         />
-        {errors?.maxCapacity?.message && <Error>{errors.maxCapacity.message}</Error>}
+        {errors?.maxCapacity?.message && (
+          <Error>{errors.maxCapacity.message}</Error>
+        )}
       </FormRow>
 
       <FormRow>
@@ -147,7 +171,7 @@ function CreateCabinForm() {
         <FileInput
           id="image"
           accept="image/*"
-          {...register("image", {
+          {...register("image", cabin ? false : {
             required: "This field is required",
           })}
         />
@@ -158,7 +182,7 @@ function CreateCabinForm() {
         <Button variation="secondary" type="reset" onClick={() => reset()}>
           Cancel
         </Button>
-        <Button disabled={isLoading}>Add cabin</Button>
+        <Button disabled={isLoading}>{cabin ? "Edit Cabin": "Add new cabin"}</Button>
       </FormRow>
     </Form>
   );

@@ -54,7 +54,7 @@ const EditDev = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [showForm, setShowForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
   const {
     id,
     image: imageSrc,
@@ -88,12 +88,12 @@ function CabinRow({ cabin }) {
           <button disabled={isDeleting} onClick={() => mutate(id)}>
             <HiOutlineTrash />
           </button>
-          <button onClick={() => setShowForm((showForm) => !showForm)}>
+          <button onClick={() => setShowEditForm((showForm) => !showForm)}>
             <HiOutlinePencilAlt />
           </button>
         </EditDev>
       </TableRow>
-      <div>{showForm && <CreateCabinForm />}</div>
+      <div>{showEditForm && <CreateCabinForm cabin={cabin} />}</div>
     </>
   );
 }
