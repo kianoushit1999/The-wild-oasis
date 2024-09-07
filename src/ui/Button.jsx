@@ -51,6 +51,7 @@ const variations = {
 const Button = styled.button`
   ${(props) => variations[props.variation]}
   ${(props) => sizes[props.size]}
+  border-radius: 1rem;
 `
 
 export default Button

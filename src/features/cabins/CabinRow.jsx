@@ -3,6 +3,9 @@ import { formatCurrency } from "../../utils/helpers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
+import { HiOutlineTrash, HiOutlinePencilAlt } from "react-icons/hi";
+import { useState } from "react";
+import CreateCabinForm from "./CreateCabinForm";
 
 const TableRow = styled.div`
   display: grid;
@@ -44,7 +47,14 @@ const Discount = styled.div`
   color: var(--color-green-700);
 `;
 
+const EditDev = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+`;
+
 function CabinRow({ cabin }) {
+  const [showForm, setShowForm] = useState(false);
   const {
     id,
     image: imageSrc,
@@ -59,24 +69,32 @@ function CabinRow({ cabin }) {
   const { isLoading: isDeleting, mutate } = useMutation({
     mutationFn: (id) => deleteCabin(id),
     onSuccess: () => {
-      toast.success('This Cabin deleted successfully.')
+      toast.success("This Cabin deleted successfully.");
       queryClient.invalidateQueries({
         queryKey: ["cabin"],
       });
-    }
+    },
   });
 
   return (
-    <TableRow>
-      <Img src={imageSrc} />
-      <Cabin>{name}</Cabin>
-      <div>Fits up to {maxCapacity} guests</div>
-      <Price>{formatCurrency(regularPrice)}</Price>
-      <Discount>${discount}</Discount>
-      <button onClick={() => mutate(id)}>
-        {isDeleting ? "Deleting ..." : "Delete"}
-      </button>
-    </TableRow>
+    <>
+      <TableRow>
+        <Img src={imageSrc} />
+        <Cabin>{name}</Cabin>
+        <div>Fits up to {maxCapacity} guests</div>
+        <Price>{formatCurrency(regularPrice)}</Price>
+        <Discount>${discount}</Discount>
+        <EditDev>
+          <button disabled={isDeleting} onClick={() => mutate(id)}>
+            <HiOutlineTrash />
+          </button>
+          <button onClick={() => setShowForm((showForm) => !showForm)}>
+            <HiOutlinePencilAlt />
+          </button>
+        </EditDev>
+      </TableRow>
+      <div>{showForm && <CreateCabinForm />}</div>
+    </>
   );
 }
 
