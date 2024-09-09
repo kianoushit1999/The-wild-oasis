@@ -1,4 +1,11 @@
-import { cloneElement, createContext, useContext, useState } from "react";
+import {
+  cloneElement,
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import styled from "styled-components";
 import { createPortal } from "react-dom";
 import { HiXCircle } from "react-icons/hi";
@@ -51,7 +58,7 @@ const Button = styled.button`
     stroke: var(--color-grey-500); */
     color: var(--color-grey-500);
   }
-`
+`;
 
 const cntx = createContext();
 
@@ -72,10 +79,24 @@ function Open({ children, opens }) {
 
 function Window({ children, name }) {
   const { openName, close } = useContext(cntx);
+  const ref = useRef();
+
+  useEffect(() => {
+    function clickHandler(e) {
+      if (!ref.current.contains(e.target)) {
+        close();
+      }
+    }
+
+    document.addEventListener("click", clickHandler, true);
+
+    return () => document.removeEventListener("click", clickHandler, true);
+  }, [close]);
+
   if (openName != name) return null;
   return createPortal(
     <Overlay>
-      <StyledModal>
+      <StyledModal ref={ref}>
         <Button onClick={close}>
           <HiXCircle />
         </Button>
