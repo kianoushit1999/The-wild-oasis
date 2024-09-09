@@ -45,11 +45,11 @@ const Error = styled.span`
   color: var(--color-red-700);
 `;
 
-function CreateCabinForm({ cabin }) {
+function CreateCabinForm({ cabin, onClose }) {
   const queryClient = useQueryClient();
   let enableEditting = false;
 
-  if(cabin){
+  if (cabin) {
     enableEditting = true;
   }
 
@@ -68,7 +68,7 @@ function CreateCabinForm({ cabin }) {
           maxCapacity: cabin.max_capacity,
           image: cabin.image,
           discount: cabin.discount,
-          description: cabin.description
+          description: cabin.description,
         }
       : {},
   });
@@ -86,8 +86,8 @@ function CreateCabinForm({ cabin }) {
   });
 
   const submitHandler = (data) => {
-    console.log(data)
-    addOrEdit(data)
+    console.log(data);
+    addOrEdit(data);
   };
 
   const ErrorHandler = (err) => {
@@ -95,7 +95,7 @@ function CreateCabinForm({ cabin }) {
   };
 
   return (
-    <Form onSubmit={handleSubmit(submitHandler, ErrorHandler)}>
+    <Form onSubmit={handleSubmit(submitHandler, ErrorHandler)} type={onClose ? "modal" : "regular"}>
       <FormRow>
         <Label htmlFor="name">Cabin name</Label>
         <Input
@@ -171,18 +171,32 @@ function CreateCabinForm({ cabin }) {
         <FileInput
           id="image"
           accept="image/*"
-          {...register("image", cabin ? false : {
-            required: "This field is required",
-          })}
+          {...register(
+            "image",
+            cabin
+              ? false
+              : {
+                  required: "This field is required",
+                }
+          )}
         />
         {errors?.image?.message && <Error>{errors.image.message}</Error>}
       </FormRow>
 
       <FormRow>
-        <Button variation="secondary" type="reset" onClick={() => reset()}>
-          reset
+        <Button
+          variation="secondary"
+          type="reset"
+          onClick={() => {
+            onClose?.();
+            reset();
+          }}
+        >
+          Cancel
         </Button>
-        <Button disabled={isLoading}>{cabin ? "Edit Cabin": "Add new cabin"}</Button>
+        <Button disabled={isLoading}>
+          {cabin ? "Edit Cabin" : "Add new cabin"}
+        </Button>
       </FormRow>
     </Form>
   );
