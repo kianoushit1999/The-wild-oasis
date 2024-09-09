@@ -4,8 +4,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { deleteCabin } from "../../services/apiCabins";
 import toast from "react-hot-toast";
 import { HiOutlineTrash, HiOutlinePencilAlt } from "react-icons/hi";
-import { useState } from "react";
 import CreateCabinForm from "./CreateCabinForm";
+import Modal from "../../ui/Modal";
 
 const TableRow = styled.div`
   display: grid;
@@ -54,7 +54,6 @@ const EditDev = styled.div`
 `;
 
 function CabinRow({ cabin }) {
-  const [showEditForm, setShowEditForm] = useState(false);
   const {
     id,
     image: imageSrc,
@@ -88,12 +87,18 @@ function CabinRow({ cabin }) {
           <button disabled={isDeleting} onClick={() => mutate(id)}>
             <HiOutlineTrash />
           </button>
-          <button onClick={() => setShowEditForm((showForm) => !showForm)}>
-            <HiOutlinePencilAlt />
-          </button>
+          <Modal>
+            <Modal.Open>
+              <button>
+                <HiOutlinePencilAlt />
+              </button>
+            </Modal.Open>
+            <Modal.Window>
+            <CreateCabinForm cabin={cabin} />
+            </Modal.Window>
+          </Modal>
         </EditDev>
       </TableRow>
-      <div>{showEditForm && <CreateCabinForm cabin={cabin} />}</div>
     </>
   );
 }
